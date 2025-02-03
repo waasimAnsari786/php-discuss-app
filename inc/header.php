@@ -1,3 +1,7 @@
+<?php include './db/config.php' ?>
+<?php session_start()
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,7 +13,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
 
-<body>
+<body class="bg-dark">
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
@@ -21,13 +25,21 @@
           <li class="nav-item">
             <a class="nav-link" href="index.php">Home</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/discuss-app/login.php">Login</a>
-          </li>
+          <!-- Conditionally render Login/Logout & Sign Up links -->
+          <?php if (isset($_SESSION['userName'])): ?>
+            <li class="nav-item">
+              <a class="nav-link" href="server/formHandling.php?logout=true">Logout (<?php echo $_SESSION['userName']; ?>)</a>
+            </li>
+          <?php else: ?>
+            <li class="nav-item">
+              <a class="nav-link" href="/discuss-app/login.php">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/discuss-app/signup.php">Sign Up</a>
+            </li>
+          <?php endif; ?>
 
-          <li class="nav-item">
-            <a class="nav-link" href="/discuss-app/signup.php">Sign Up</a>
-          </li>
+
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               Questions
