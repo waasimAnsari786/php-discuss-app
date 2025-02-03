@@ -5,12 +5,12 @@ include './inc/header.php';
 
 <form action="server/formHandling.php" method="POST">
   <div class="mb-3">
-    <label for="userName" class="form-label">Name</label>
-    <input type="text" class="form-control" name="userName" placeholder="Your Name">
+    <label for="question" class="form-label">Question</label>
+    <input type="text" class="form-control" name="question" placeholder="Your Question">
   </div>
   <div class="mb-3">
-    <label for="email" class="form-label">Email</label>
-    <input type="text" class="form-control" name="email" placeholder="Your Email">
+    <label for="description" class="form-label">Description</label>
+    <input type="text" class="form-control" name="description" placeholder="Your Description">
   </div>
   <div class="mb-3">
     <label for="password" class="form-label">Password</label>
