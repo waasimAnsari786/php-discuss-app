@@ -3,7 +3,7 @@ include './inc/header.php';
 
 ?>
 
-<form action="server/formHandling.php" method="POST">
+<form action="server/formHandling.php" method="POST" class="col-12 col-md-6 mx-auto border p-3 border-secondary rounded-3">
   <div class="mb-3">
     <label for="userName" class="form-label">Name</label>
     <input type="text" class="form-control" name="userName" placeholder="Your Name">

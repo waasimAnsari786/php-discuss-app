@@ -39,7 +39,9 @@ if ($edit_question) {
   <div class="mb-3">
     <input type="submit" class="btn btn-primary" name="<?php echo isset($_GET['edit_question']) ? 'update_question' : 'ask_question' ?>" value="<?php echo isset($_GET['edit_question']) ? 'Update Question' : 'Ask Question' ?>">
     <input type="hidden" name="user_id" value="<?php echo $_SESSION['id'] ?>">
-    <input type="hidden" name="question_id" value="<?php echo isset($_GET['edit_question']) ? $edit_result['id'] : null; ?>">
+    <?php if (isset($_GET['edit_question'])): ?>
+      <input type="hidden" name="question_id" value="<?php echo $edit_result['id']; ?>">
+    <?php endif; ?>
   </div>
 
 
