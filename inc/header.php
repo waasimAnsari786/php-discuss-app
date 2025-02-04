@@ -37,6 +37,7 @@
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <li><a class="dropdown-item" href="/discuss-app/ask_question.php">Ask Question</a></li>
+                <li><a class="dropdown-item" href="/discuss-app/all_questions.php">All Questions</a></li>
                 <li><a class="dropdown-item" href="#">Latest Questions</a></li>
               </ul>
             </li>
@@ -56,7 +57,7 @@
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <li><a class="dropdown-item" href="/discuss-app/my_categories.php">My Categories</a></li>
-                <li><a class="dropdown-item" href="/discuss-app/all_categories.php">My Questions</a></li>
+                <li><a class="dropdown-item" href="/discuss-app/my_questions.php">My Questions</a></li>
               </ul>
             </li>
           <?php else: ?>

@@ -104,16 +104,12 @@ if (isset($_POST['submit'])) {
   }
 
   $stmt->close();
-};
-
-if (isset($_GET['delete_category'])) {
+} else if (isset($_GET['delete_category'])) {
   $delete_category = $_GET['delete_category'];
   $delete_query = "DELETE FROM categories WHERE category_name = '$delete_category'";
   $conn->query($delete_query);
   header('location:/discuss-app/my_categories.php');
-}
-
-if (isset($_POST['update_category'])) {
+} else if (isset($_POST['update_category'])) {
   // Filter out the 'submit' key
   $filtered_keys = array_diff(array_keys($_POST), ['update_category', 'category_id']);
   $filtered_vals = array_diff(array_values($_POST), ['Update Category', $_POST['category_id']]);
@@ -146,4 +142,37 @@ if (isset($_POST['update_category'])) {
 
   $stmt->close();
   $conn->close();
+} else if (isset($_POST['ask_question'])) {
+  // Filter out the 'submit' key
+  $filtered_keys = array_diff(array_keys($_POST), ['ask_question']);
+  $filtered_vals = array_diff(array_values($_POST), ['Ask Question']);
+
+  // Ensure values are properly wrapped in single quotes for SQL
+  $escaped_vals = array_map(function ($val) use ($conn) {
+    return $conn->real_escape_string($val);
+  }, $filtered_vals);
+
+  //split the keys into columns
+  $columns = implode(', ', $filtered_keys);
+
+  //create placeholders(?) for the values
+  $placeholders = implode(', ', array_fill(0, count($filtered_keys), '?'));
+
+  // create the query
+  $question_query = "INSERT INTO questions ($columns) VALUES ($placeholders)";
+
+  //  Use proper prepared statement
+  $stmt = $conn->prepare($question_query);
+
+  // Dynamically bind parameters to the query
+  $types = str_repeat('s', count($filtered_vals));
+  $stmt->bind_param($types, ...$escaped_vals);
+
+  if ($stmt->execute()) {
+    header('location:/discuss-app/all_questions.php');
+  } else {
+    echo 'New category not added: ' . $conn->error;
+  }
+
+  $stmt->close();
 }
