@@ -16,7 +16,7 @@
               <p class="card-text"><?php echo $question['question_description']; ?></p>
               <p class="card-text">Question Category: <?php echo $question['question_category'] ? $question['question_category'] : 'None'; ?></p>
               <p class="card-text">Created At: <?php echo $question['date']; ?></p>
-              <a href="add_question.php?edit_question=<?php echo $question['question']; ?>" class="btn btn-primary">Edit</a>
+              <a href="ask_question.php?edit_question=<?php echo $question['question']; ?>" class="btn btn-primary">Edit</a>
               <a href="server/formHandling.php?delete_question=<?php echo $question['question']; ?>" class="btn btn-danger">Delete</a>
             </div>
           </div>

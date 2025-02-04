@@ -21,59 +21,63 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link" href="index.php">Home</a>
-          </li>
-          <!-- Conditionally render Login/Logout & Sign Up links -->
-          <?php if (isset($_SESSION['userName'])): ?>
+        <div class="container">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link" href="server/formHandling.php?logout=true">Logout (<?php echo $_SESSION['userName']; ?>)</a>
+              <a class="nav-link" href="index.php">Home</a>
             </li>
+            <!-- Conditionally render Login/Logout & Sign Up links -->
+            <?php if (isset($_SESSION['userName'])): ?>
+              <li class="nav-item">
+                <a class="nav-link" href="server/formHandling.php?logout=true">Logout (<?php echo $_SESSION['userName']; ?>)</a>
+              </li>
 
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Questions
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="/discuss-app/ask_question.php">Ask Question</a></li>
-                <li><a class="dropdown-item" href="/discuss-app/all_questions.php">All Questions</a></li>
-                <li><a class="dropdown-item" href="#">Latest Questions</a></li>
-              </ul>
-            </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Questions
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li><a class="dropdown-item" href="/discuss-app/ask_question.php">Ask Question</a></li>
+                  <li><a class="dropdown-item" href="/discuss-app/all_questions.php">All Questions</a></li>
+                  <li><a class="dropdown-item" href="#">Latest Questions</a></li>
+                </ul>
+              </li>
 
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Categories
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="/discuss-app/add_category.php">Add Category</a></li>
-                <li><a class="dropdown-item" href="/discuss-app/all_categories.php">All Categories</a></li>
-              </ul>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                My Account
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="/discuss-app/my_categories.php">My Categories</a></li>
-                <li><a class="dropdown-item" href="/discuss-app/my_questions.php">My Questions</a></li>
-              </ul>
-            </li>
-          <?php else: ?>
-            <li class="nav-item">
-              <a class="nav-link" href="/discuss-app/login.php">Login</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/discuss-app/signup.php">Sign Up</a>
-            </li>
-          <?php endif; ?>
-
-
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Categories
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li><a class="dropdown-item" href="/discuss-app/add_category.php">Add Category</a></li>
+                  <li><a class="dropdown-item" href="/discuss-app/all_categories.php">All Categories</a></li>
+                </ul>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  My Account
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li><a class="dropdown-item" href="/discuss-app/my_categories.php">My Categories</a></li>
+                  <li><a class="dropdown-item" href="/discuss-app/my_questions.php">My Questions</a></li>
+                </ul>
+              </li>
+            <?php else: ?>
+              <li class="nav-item">
+                <a class="nav-link" href="/discuss-app/login.php">Login</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/discuss-app/signup.php">Sign Up</a>
+              </li>
+            <?php endif; ?>
 
 
-        </ul>
+
+
+          </ul>
+        </div>
 
       </div>
     </div>
   </nav>
+
+  <div class="container">
