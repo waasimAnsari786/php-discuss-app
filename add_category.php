@@ -22,20 +22,21 @@ if ($edit_category) {
     <textarea class="form-control" name="category_description" placeholder="Category Description"><?php echo isset($_GET['edit_category']) ? $edit_result['category_description'] : null; ?></textarea>
   </div>
   <div class="mb-3">
-    <label for="parent_category" class="form-label">Parent Category</label>
-    <select class="form-control" name="parent_category">
-      <option value="0">None</option>
+    <label for="parent_category_id" class="form-label">Parent Category</label>
+    <select class="form-control" name="parent_category_id">
+      <option value="null" selected>None</option>
       <?php
       $categories = $conn->query("SELECT * FROM categories");
       foreach ($categories as $category) {
         if ($category['category_name'] == $edit_result['parent_category']) {
-          echo "<option value='" . $category['category_name'] . "' selected>" . $category['category_name'] . "</option>";
+          echo "<option value='" . $category['id'] . "' selected>" . $category['category_name'] . "</option>";
         } else {
-          echo "<option value='" . $category['category_name'] . "'>" . $category['category_name'] . "</option>";
+          echo "<option value='" . $category['id'] . "'>" . $category['category_name'] . "</option>";
         }
       }
       ?>
     </select>
+
   </div>
 
   <div class="mb-3">

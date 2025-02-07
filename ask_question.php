@@ -20,16 +20,16 @@ if ($edit_question) {
     <textarea name="question_description" class="form-control" placeholder="Question Description"><?php echo isset($_GET['edit_question']) ? $edit_result['question_description'] : null; ?></textarea>
   </div>
   <div class="mb-3">
-    <label for="question_category" class="form-label">Question Category</label>
-    <select class="form-control" name="question_category">
-      <option value="0">None</option>
+    <label for="question_category_id" class="form-label">Question Category</label>
+    <select class="form-control" name="question_category_id">
+      <option value="0" selected>None</option>
       <?php
       $categories = $conn->query("SELECT * FROM categories");
       foreach ($categories as $category) {
         if ($category['category_name'] == $edit_result['question_category']) {
-          echo "<option value='" . $category['category_name'] . "' selected>" . $category['category_name'] . "</option>";
+          echo "<option value='" . $category['id'] . "' selected>" . $category['category_name'] . "</option>";
         } else {
-          echo "<option value='" . $category['category_name'] . "'>" . $category['category_name'] . "</option>";
+          echo "<option value='" . $category['id'] . "'>" . $category['category_name'] . "</option>";
         }
       }
       ?>
