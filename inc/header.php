@@ -57,7 +57,8 @@
                   My Account
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li><a class="dropdown-item" href="/discuss-app/my_categories.php">My Categories</a></li>
+                  <li><a class="dropdown-item" href="/discuss-app/all_categories.php?user_id=<?= isset($_SESSION['id']) ? $_SESSION['id'] : ''; ?>">My Categories</a></li>
+
                   <li><a class="dropdown-item" href="/discuss-app/my_questions.php">My Questions</a></li>
                 </ul>
               </li>

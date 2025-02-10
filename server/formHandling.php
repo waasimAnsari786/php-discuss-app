@@ -2,6 +2,8 @@
 include(__DIR__ . "/../db/config.php");
 session_start();
 
+$user_id = isset($_SESSION['id']) ? $_SESSION['id'] : '';
+
 if (isset($_POST['submit'])) {
   // Filter out the 'submit' key
   $filtered_keys = array_diff(array_keys($_POST), ['submit']);
@@ -76,39 +78,39 @@ if (isset($_POST['submit'])) {
   $filtered_keys = array_diff(array_keys($_POST), ['add_category']);
   $filtered_vals = array_diff(array_values($_POST), ['Add Category']);
 
-  // Ensure values are properly wrapped in single quotes for SQL
+  // Ensure values are properly escaped for SQL
   $escaped_vals = array_map(function ($val) use ($conn) {
-    return $conn->real_escape_string($val);
+    return empty($val) ? NULL : $conn->real_escape_string($val);
   }, $filtered_vals);
 
-  //split the keys into columns
+  // Split the keys into columns
   $columns = implode(', ', $filtered_keys);
 
-  //create placeholders(?) for the values
+  // Create placeholders for the values
   $placeholders = implode(', ', array_fill(0, count($filtered_keys), '?'));
 
-  //create the query
+  // Create the query
   $user_query = "INSERT INTO categories ($columns) VALUES ($placeholders)";
 
-  // Use proper prepared statement
+  // Use prepared statement
   $stmt = $conn->prepare($user_query);
 
   // Dynamically bind parameters to the query
-  $types = str_repeat('s', count($filtered_vals));
+  $types = str_repeat('s', count($filtered_vals)); // Assuming all are strings
   $stmt->bind_param($types, ...$escaped_vals);
 
   if ($stmt->execute()) {
-    header('location:/discuss-app/all_categories.php');
+    header("Location: /discuss-app/all_categories.php?user_id=$user_id");
   } else {
     echo 'New category not added: ' . $conn->error;
   }
 
   $stmt->close();
-} else if (isset($_GET['delete_category'])) {
-  $delete_category = $_GET['delete_category'];
-  $delete_query = "DELETE FROM categories WHERE category_name = '$delete_category'";
+} else if (isset($_GET['delete_category_id'])) {
+  $delete_category_id = $_GET['delete_category_id'];
+  $delete_query = "DELETE FROM categories WHERE id = '$delete_category_id'";
   $conn->query($delete_query);
-  header('location:/discuss-app/my_categories.php');
+  header("Location: /discuss-app/all_categories.php?user_id=$user_id");
 } else if (isset($_POST['update_category'])) {
   // Filter out the 'submit' key
   $filtered_keys = array_diff(array_keys($_POST), ['update_category', 'category_id']);
@@ -116,8 +118,12 @@ if (isset($_POST['submit'])) {
 
   // Ensure values are properly wrapped in single quotes for SQL
   $escaped_vals = array_map(function ($val) use ($conn) {
-    return $conn->real_escape_string($val);
+    return empty($val) ? NULL : $conn->real_escape_string($val);
   }, $filtered_vals);
+
+  echo '<br>';
+  var_dump($escaped_vals);
+  echo '<br>';
 
   $update_fields = [];
   foreach ($filtered_keys as $index => $column) {
@@ -130,12 +136,12 @@ if (isset($_POST['submit'])) {
   $stmt = $conn->prepare($query);
 
   // Bind parameters dynamically
-  $param_types = str_repeat("s", count($filtered_vals)); // All values are strings except ID (integer)
+  $param_types = str_repeat("s", count($escaped_vals)); // All values are strings except ID (integer)
 
-  $stmt->bind_param($param_types, ...$filtered_vals);
+  $stmt->bind_param($param_types, ...$escaped_vals);
 
   if ($stmt->execute()) {
-    header('location:/discuss-app/my_categories.php');
+    header("Location: /discuss-app/all_categories.php?user_id=$user_id");
   } else {
     echo "Error updating record: " . $conn->error;
   }
