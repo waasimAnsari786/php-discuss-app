@@ -1,16 +1,20 @@
 <?php
 include './inc/header.php';
-$user_id = $_SESSION['id'];
+include './classes/category.class.php';
 
-// Check if 'edit_category_id' is set in the URL
+$user_id =  $_SESSION['user_data']['id'];
+
 $edit_category_id = isset($_GET['edit_category_id']) ? $_GET['edit_category_id'] : null;
 
+$category = new Category($conn);
+$categories = $category->get_categories($edit_category_id);
+
+// Check if 'edit_category_id' is set in the URL
 if ($edit_category_id) {
-  $edit_query = "SELECT * FROM categories WHERE id = '$edit_category_id'";
-  $edit_stmt = $conn->query($edit_query);
-  $edit_result = $edit_stmt->fetch_assoc();
+  $edit_result = $categories[0];
 }
 ?>
+
 
 <form action="server/formHandling.php" method="POST">
   <div class="mb-3">
@@ -26,7 +30,7 @@ if ($edit_category_id) {
     <select class="form-control" name="parent_category_id">
       <option value="" selected>None</option>
       <?php
-      $categories = $conn->query("SELECT * FROM categories");
+      $categories = $category->get_categories();
       foreach ($categories as $category) {
         if ($category['id'] == $edit_result['id']) {
           continue;
@@ -44,7 +48,7 @@ if ($edit_category_id) {
     <input type="submit" class="btn btn-primary" name="<?php echo $edit_category_id ? 'update_category' : 'add_category'; ?>" value="<?php echo $edit_category_id ? 'Update Category' : 'Add Category'; ?>">
     <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
     <?php if ($edit_category_id) { ?>
-      <input type="hidden" name="category_id" value="<?php echo $edit_category_id; ?>">
+      <input type="hidden" name="id" value="<?php echo $edit_category_id; ?>">
     <?php } ?>
   </div>
 </form>

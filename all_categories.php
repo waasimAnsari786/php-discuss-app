@@ -1,16 +1,9 @@
 <?php
 include './inc/header.php';
+require_once __DIR__ . '/./classes/category.class.php';
 
-
-// Fetch all categories
-$category_query;
-if (isset($_GET['user_id'])) {
-  $category_query = "SELECT * FROM categories WHERE user_id =" . $_GET['user_id'];
-} else {
-  $category_query = "SELECT * FROM categories";
-}
-$stmt = $conn->query($category_query);
-$categories = $stmt->fetch_all(MYSQLI_ASSOC);
+$category = new Category($conn);
+$categories = $category->get_categories();
 
 // Create an associative array for quick lookup of category names by ID
 $categoryMap = [];
