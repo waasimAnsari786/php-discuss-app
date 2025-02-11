@@ -1,103 +1,55 @@
 <?php
-include(__DIR__ . "/../db/config.php");
+require_once __DIR__ . '/../classes/auth.class.php';
+require_once __DIR__ . '/../db/config.php';
+
+$db = new Database();
+$conn = $db->getConnection();
+
 session_start();
 
-$user_id = isset($_SESSION['id']) ? $_SESSION['id'] : '';
-
-if (isset($_POST['submit'])) {
-  // Filter out the 'submit' key
-  $filtered_keys = array_diff(array_keys($_POST), ['submit']);
-  $filtered_vals = array_diff(array_values($_POST), ['Sign Up']);
-
-  // Ensure values are properly escaped for SQL
-  $escaped_vals = array_map(function ($val) use ($conn) {
-    return $conn->real_escape_string($val);
-  }, $filtered_vals);
-
-  // Split the keys into columns
-  $columns = implode(', ', $filtered_keys);
-
-  // Create placeholders (?) for the values
-  $placeholders = implode(', ', array_fill(0, count($filtered_keys), '?'));
-
-  // Create the query
-  $user_query = "INSERT INTO users ($columns) VALUES ($placeholders)";
-
-  // Use proper prepared statement
-  $stmt = $conn->prepare($user_query);
-
-  // Dynamically bind parameters to the query
-  $types = str_repeat('s', count($filtered_vals));
-  $stmt->bind_param($types, ...$escaped_vals);
-
-  if ($stmt->execute()) {
-    // Get the last inserted user ID
-    $last_id = $conn->insert_id;
-
-    // Set the session variables
-    $_SESSION['userName'] = $_POST['userName'];
-    $_SESSION['email'] = $_POST['email'];
-    $_SESSION['id'] = $last_id; // Store the user ID in the session
-
-    header('location:/discuss-app');
-  } else {
-    echo 'New user not registered: ' . $conn->error;
-  }
-
-  $stmt->close();
+if (isset($_POST['signup'])) {
+  $auth = new Auth(
+    $_POST,
+    $conn
+  );
+  $auth->signup();
 } else if (isset($_GET['logout'])) {
   session_destroy();
   header('location:/discuss-app');
 } else if (isset($_POST['login'])) {
-  $email = $conn->real_escape_string($_POST['email']);
-  $password = $conn->real_escape_string($_POST['password']);
+  $auth = new Auth(
+    $_POST,
+    $conn
+  );
+  $auth->login();
+} else if (isset($_POST['add_category'])) {
+  $filtered_keys = array_diff(array_keys($_POST), ['add_category']);
 
-  $login_query = "SELECT * FROM users WHERE email=? AND password=?";
-  $stmt = $conn->prepare($login_query);
-  $stmt->bind_param('ss', $email, $password);
+  // Define column types dynamically based on expected data types
+  $types = '';
+  $params = [];
 
-  $stmt->execute();
-  $result = $stmt->get_result();
-
-  if ($result->num_rows > 0) {
-    foreach ($result as $row) {
-      foreach ($row as $key => $val) {
-        if ($key == 'userName' || $key == 'email' || $key == 'id') {
-          $_SESSION[$key] = $val;
-        }
-      }
+  foreach ($filtered_keys as $key) {
+    if (empty($_POST[$key])) {
+      $types .= 'i'; // Integer
+      $_POST[$key] = NULL;
+      $params[] = $_POST[$key];
+    } else if (in_array($key, ['parent_category_id', 'user_id'])) { // Check for integer fields
+      $types .= 'i'; // Integer
+      $params[] = (int) $_POST[$key]; // Cast to integer
+    } else {
+      $types .= 's'; // String
+      $params[] = $conn->real_escape_string($_POST[$key]); // Escape strings
     }
-    header('location:/discuss-app');
-  } else {
-    echo "User doesn't exist";
   }
 
-  $stmt->close();
-} else if (isset($_POST['add_category'])) {
-  // Filter out the 'add_category' key
-  $filtered_keys = array_diff(array_keys($_POST), ['add_category']);
-  $filtered_vals = array_diff(array_values($_POST), ['Add Category']);
-
-  // Ensure values are properly escaped for SQL
-  $escaped_vals = array_map(function ($val) use ($conn) {
-    return empty($val) ? NULL : $conn->real_escape_string($val);
-  }, $filtered_vals);
-
-  // Split the keys into columns
+  // Create SQL query
   $columns = implode(', ', $filtered_keys);
-
-  // Create placeholders for the values
   $placeholders = implode(', ', array_fill(0, count($filtered_keys), '?'));
-
-  // Create the query
   $user_query = "INSERT INTO categories ($columns) VALUES ($placeholders)";
 
-  // Use prepared statement
   $stmt = $conn->prepare($user_query);
-
-  // Dynamically bind parameters to the query
-  $types = str_repeat('s', count($filtered_vals)); // Assuming all are strings
-  $stmt->bind_param($types, ...$escaped_vals);
+  $stmt->bind_param($types, ...$params);
 
   if ($stmt->execute()) {
     header("Location: /discuss-app/all_categories.php?user_id=$user_id");
@@ -107,9 +59,11 @@ if (isset($_POST['submit'])) {
 
   $stmt->close();
 } else if (isset($_GET['delete_category_id'])) {
-  $delete_category_id = $_GET['delete_category_id'];
-  $delete_query = "DELETE FROM categories WHERE id = '$delete_category_id'";
-  $conn->query($delete_query);
+  $delete_query = "DELETE FROM categories WHERE id = ?";
+  $stmt = $conn->prepare($delete_query);
+  $stmt->bind_param("i", $_GET['delete_category_id']);
+  $stmt->execute();
+  $stmt->close();
   header("Location: /discuss-app/all_categories.php?user_id=$user_id");
 } else if (isset($_POST['update_category'])) {
   // Filter out the 'submit' key
@@ -120,10 +74,6 @@ if (isset($_POST['submit'])) {
   $escaped_vals = array_map(function ($val) use ($conn) {
     return empty($val) ? NULL : $conn->real_escape_string($val);
   }, $filtered_vals);
-
-  echo '<br>';
-  var_dump($escaped_vals);
-  echo '<br>';
 
   $update_fields = [];
   foreach ($filtered_keys as $index => $column) {

@@ -1,7 +1,4 @@
-<?php
-include './inc/header.php';
-
-?>
+<?php include './inc/header.php'; ?>
 
 <form action="server/formHandling.php" method="POST" class="col-12 col-md-6 mx-auto border p-3 border-secondary rounded-3">
   <div class="mb-3">
@@ -18,11 +15,8 @@ include './inc/header.php';
   </div>
 
   <div class="mb-3">
-    <input type="submit" class="btn btn-primary" name="submit" value="Sign Up">
+    <input type="submit" class="btn btn-primary" name="signup" value="Sign Up">
   </div>
-
-
-
 </form>
 
 <?php include './inc/footer.php' ?>

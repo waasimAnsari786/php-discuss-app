@@ -1,6 +1,7 @@
 <?php
 include './inc/header.php';
 
+
 // Fetch all categories
 $category_query;
 if (isset($_GET['user_id'])) {

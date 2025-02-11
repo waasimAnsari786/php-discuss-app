@@ -1,5 +1,5 @@
-<?php include './db/config.php' ?>
-<?php session_start()
+<?php
+session_start();
 ?>
 
 <!DOCTYPE html>
@@ -27,9 +27,9 @@
               <a class="nav-link" href="index.php">Home</a>
             </li>
             <!-- Conditionally render Login/Logout & Sign Up links -->
-            <?php if (isset($_SESSION['userName'])): ?>
+            <?php if (isset($_SESSION['user_data'])): ?>
               <li class="nav-item">
-                <a class="nav-link" href="server/formHandling.php?logout=true">Logout (<?php echo $_SESSION['userName']; ?>)</a>
+                <a class="nav-link" href="server/formHandling.php?logout=true">Logout (<?php echo $_SESSION['user_data']['userName']; ?>)</a>
               </li>
 
               <li class="nav-item dropdown">
@@ -57,7 +57,7 @@
                   My Account
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li><a class="dropdown-item" href="/discuss-app/all_categories.php?user_id=<?= isset($_SESSION['id']) ? $_SESSION['id'] : ''; ?>">My Categories</a></li>
+                  <li><a class="dropdown-item" href="/discuss-app/all_categories.php?user_id=<?= isset($_SESSION['user_data']) ? $_SESSION['user_data']['id'] : ''; ?>">My Categories</a></li>
 
                   <li><a class="dropdown-item" href="/discuss-app/my_questions.php">My Questions</a></li>
                 </ul>
