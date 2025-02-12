@@ -2,6 +2,7 @@
 include './inc/header.php';
 require_once __DIR__ . '/./classes/category.class.php';
 require_once __DIR__ . '/./classes/auth.class.php';
+require_once __DIR__ . '/./utils/create_lookup_map.php';
 
 $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : null;
 $auth = new Auth($conn);
@@ -9,16 +10,6 @@ $users = $auth->get_users();
 
 $category = new Category($conn);
 $categories = $category->get_categories(null, $user_id);
-
-// Create an associative array for quick lookup of category names by ID
-function createLookupMap($data, $key, $value)
-{
-  $map = [];
-  foreach ($data as $item) {
-    $map[$item[$key]] = $item[$value];
-  }
-  return $map;
-}
 
 // Usage for categories
 $categoryMap = createLookupMap($categories, 'id', 'category_name');

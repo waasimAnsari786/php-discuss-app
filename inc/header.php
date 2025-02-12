@@ -60,7 +60,7 @@ session_start();
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                   <li><a class="dropdown-item" href="/discuss-app/all_categories.php?user_id=<?= isset($_SESSION['user_data']) ? $_SESSION['user_data']['id'] : ''; ?>">My Categories</a></li>
 
-                  <li><a class="dropdown-item" href="/discuss-app/my_questions.php">My Questions</a></li>
+                  <li><a class="dropdown-item" href="/discuss-app/all_questions.php?user_id=<?= isset($_SESSION['user_data']) ? $_SESSION['user_data']['id'] : ''; ?>">My Questions</a></li>
                 </ul>
               </li>
             <?php else: ?>
