@@ -66,10 +66,12 @@ class Category
     $this->conn->close();
   }
 
-  public function get_categories($category_id = null)
+  public function get_categories($category_id = null, $user_id = null)
   {
     if ($category_id) {
       $this->category_query = "SELECT * FROM categories WHERE id =" . $category_id;
+    } else if ($user_id) {
+      $this->category_query = "SELECT * FROM categories WHERE user_id =" . $user_id;
     } else {
       $this->category_query = "SELECT * FROM categories";
     }

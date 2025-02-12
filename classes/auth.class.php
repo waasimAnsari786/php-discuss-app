@@ -82,4 +82,17 @@ class Auth
     $stmt->close();
     $this->conn->close();
   }
+
+  public function get_users()
+  {
+    // Final SQL Query
+    $user_query = "SELECT * FROM users";
+    $result = $this->conn->query($user_query);
+    // Check if there are users
+    if ($result->num_rows > 0) {
+      $users = $result->fetch_all(MYSQLI_ASSOC);
+
+      return $users;
+    }
+  }
 }

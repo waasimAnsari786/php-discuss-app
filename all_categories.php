@@ -1,16 +1,30 @@
 <?php
 include './inc/header.php';
 require_once __DIR__ . '/./classes/category.class.php';
+require_once __DIR__ . '/./classes/auth.class.php';
+
+$user_id = isset($_GET['user_id']) ? $_GET['user_id'] : null;
+$auth = new Auth($conn);
+$users = $auth->get_users();
 
 $category = new Category($conn);
-$categories = $category->get_categories();
+$categories = $category->get_categories(null, $user_id);
 
 // Create an associative array for quick lookup of category names by ID
-$categoryMap = [];
-foreach ($categories as $cat) {
-  $categoryMap[$cat['id']] = $cat['category_name'];
+function createLookupMap($data, $key, $value)
+{
+  $map = [];
+  foreach ($data as $item) {
+    $map[$item[$key]] = $item[$value];
+  }
+  return $map;
 }
 
+// Usage for categories
+$categoryMap = createLookupMap($categories, 'id', 'category_name');
+
+// Usage for users
+$userMap = createLookupMap($users, 'id', 'userName');
 ?>
 
 <div class="row">
@@ -30,7 +44,13 @@ foreach ($categories as $cat) {
               ?>
             </p>
             <p class="card-text">Created At: <?php echo $category['date']; ?></p>
-            <?php if (isset($_GET['user_id'])): ?>
+            <p class="card-text">Created By:
+              <?php
+              echo isset($userMap[$category['user_id']])
+                ? $userMap[$category['user_id']]
+                : 'None';
+              ?></p>
+            <?php if ($user_id): ?>
               <a href="add_category.php?edit_category_id=<?php echo $category['id']; ?>" class="btn btn-primary">Edit</a>
               <a href="server/formHandling.php?delete_category_id=<?php echo $category['id']; ?>" class="btn btn-danger">Delete</a>
             <?php endif; ?>
