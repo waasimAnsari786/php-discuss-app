@@ -3,7 +3,7 @@ include './inc/header.php';
 require_once __DIR__ . '/./classes/question.class.php';
 require_once __DIR__ . '/./classes/auth.class.php';
 require_once __DIR__ . '/./classes/category.class.php';
-require_once __DIR__ . '/./utils/create_lookup_map.php';
+require_once __DIR__ . '/./utils/create_lookup_map.utils.php';
 
 $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : null;
 $auth = new Auth($conn);

@@ -4,7 +4,7 @@ include './classes/question.class.php';
 include './classes/category.class.php';
 include './classes/auth.class.php';
 include './classes/answer.class.php';
-include './utils/create_lookup_map.php';
+include './utils/create_lookup_map.utils.php';
 ?>
 
 <?php

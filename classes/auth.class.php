@@ -45,18 +45,17 @@ class Auth
     if ($stmt->execute()) {
       // Get the last inserted user ID
       $last_id = $this->conn->insert_id;
-      // push user_id in this array
+      // Push user_id in this array
       $userData['id'] = $last_id;
-      // Set the session variables
-      $_SESSION['user_data'] = $userData;
-      header('location:/discuss-app');
+      // Return a success response
+      return  ['success' => true, 'user' => $userData];
     } else {
-      echo 'New user not registered: ' . $this->conn->error;
+      // Return an error response
+      return ['error' => 'New user not registered: ' . $this->conn->error];
     }
 
-    // Close statement & connection
+    // Close statement
     $stmt->close();
-    $this->conn->close();
   }
 
   public function login($userData)
@@ -71,10 +70,10 @@ class Auth
     if ($result->num_rows > 0) {
       $user = $result->fetch_assoc();
       if (password_verify($userData['password'], $user['password'])) {
-        $_SESSION['user_data'] = $user;
-        header('location:/discuss-app');
+        return  ['success' => true, 'user' => $user];
       } else {
-        echo "Incorrect password";
+        // Return an error response
+        return ['error' => 'New user not registered: ' . $this->conn->error];
       }
     }
 
