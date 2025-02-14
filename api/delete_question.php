@@ -1,41 +1,36 @@
 <?php
 session_start(); // Start the session
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 require_once __DIR__ . '/../db/config.php';
-require_once __DIR__ . '/../classes/auth.class.php';
 require_once __DIR__ . '/../utils/api_error.utils.php';
 require_once __DIR__ . '/../utils/api_response.utils.php';
-require_once __DIR__ . '/../utils/validation.utils.php'; // Include the validation utility
+require_once __DIR__ . '/../classes/question.class.php'; // Include the Question class
 
 header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $data = json_decode(file_get_contents("php://input"), true);
+if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+  $rawData = file_get_contents("php://input");
+  $data = json_decode($rawData, true);
 
-  // Validate user data
-  $errors = validateUserData($data);
-
-  // Check for validation errors
-  if (!empty($errors)) {
-    $apiError = new ApiError(400, 'Validation errors', $errors);
+  // Check if ID is provided
+  if (empty($data['id'])) {
+    $apiError = new ApiError(400, 'Question ID is required');
     http_response_code($apiError->statusCode);
     echo json_encode($apiError->toArray());
     exit;
   }
 
+  // Proceed with question deletion logic using the Question class
   try {
-    $auth = new Auth($conn);
-    $result = $auth->login($data); // Assuming login method returns an array with success and user data
+    $question = new Question($conn);
+    $result = $question->delete_question($data['id']); // Use the method to delete question
 
+    // Check the result and respond accordingly
     if ($result['success']) {
-      // Set session variables if needed
-      $_SESSION['user_data'] = $result['user'];
-      $apiResponse = new ApiResponse(200, $result['user'], 'Login successful');
+      $apiResponse = new ApiResponse(200, null, $result['message']);
       http_response_code($apiResponse->statusCode);
       echo json_encode($apiResponse->toArray());
     } else {
-      $apiError = new ApiError(401, 'Login failed', [$result['error']]);
+      $apiError = new ApiError(404, 'Deletion failed', [$result['message']]);
       http_response_code($apiError->statusCode);
       echo json_encode($apiError->toArray());
     }

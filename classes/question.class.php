@@ -14,13 +14,6 @@ class Question
   // ask or update question method
   public function ask_update_question($questionData)
   {
-    // Remove 'ask or update' keys if exist
-    if (isset($questionData['ask_question'])) {
-      unset($questionData['ask_question']);
-    } else {
-      unset($questionData['update_question']);
-    }
-
     // Define column types dynamically based on expected data types
     $types = '';
 
@@ -57,9 +50,9 @@ class Question
 
     // Execute the query
     if ($stmt->execute()) {
-      header("Location: /discuss-app/all_questions.php?user_id=" . $_SESSION['user_data']['id']);
+      return ['success' => true, 'message' => 'Question asked/updated successfully.', 'question_id' => $this->conn->insert_id];
     } else {
-      echo 'New question not asked/updated: ' . $this->conn->error;
+      return ['success' => false, 'message' => 'New question not asked/updated: ' . $this->conn->error];
     }
     // Close statement & connection
     $stmt->close();
@@ -78,7 +71,7 @@ class Question
     $stmt = $this->conn->query($this->question_query);
     $questions = $stmt->fetch_all(MYSQLI_ASSOC);
 
-    return $questions;
+    return ['success' => true, 'data' => $questions];
     // Close statement & connection
     $stmt->close();
     $this->conn->close();
@@ -90,7 +83,14 @@ class Question
     $stmt = $this->conn->prepare($delete_query);
     $stmt->bind_param("i", $question_id);
     $stmt->execute();
+
+    // Check if the question was deleted
+    if ($stmt->affected_rows > 0) {
+      return ['success' => true, 'message' => 'Question deleted successfully.'];
+    } else {
+      return ['success' => false, 'message' => 'Question not found or could not be deleted.'];
+    }
+
     $stmt->close();
-    header("Location:/discuss-app/all_questions.php?user_id=" . $_SESSION['user_data']['id']);
   }
 }

@@ -17,9 +17,6 @@ class Auth
     // Hash password
     $userData['password'] = password_hash($userData['password'], PASSWORD_DEFAULT);
 
-    // Remove 'signup' key if exists
-    unset($userData['signup']);
-
     // Extract column names dynamically
     $columns = implode(", ", array_keys($userData));  // `name`, `email`, `password`
     $placeholders = implode(", ", array_fill(0, count($userData), "?")); // ?, ?, ?
@@ -47,6 +44,7 @@ class Auth
       $last_id = $this->conn->insert_id;
       // Push user_id in this array
       $userData['id'] = $last_id;
+      $userData['password'] = null;
       // Return a success response
       return  ['success' => true, 'user' => $userData];
     } else {
@@ -70,11 +68,14 @@ class Auth
     if ($result->num_rows > 0) {
       $user = $result->fetch_assoc();
       if (password_verify($userData['password'], $user['password'])) {
-        return  ['success' => true, 'user' => $user];
+        $user['password'] = null;
+        return ['success' => true, 'user' => $user];
       } else {
         // Return an error response
-        return ['error' => 'New user not registered: ' . $this->conn->error];
+        return ['success' => false, 'error' => "Invalid login credintials: " . $this->conn->error];
       }
+    } else {
+      return ['success' => false, 'error' => "User doesn't exist:"];
     }
 
     // Close statement & connection

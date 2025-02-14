@@ -14,13 +14,6 @@ class Category
   // Add or update category method
   public function add_update_category($categoryData)
   {
-    // Remove 'add or update' keys if exist
-    if (isset($categoryData['add_category'])) {
-      unset($categoryData['add_category']);
-    } else {
-      unset($categoryData['update_category']);
-    }
-
     // Define column types dynamically based on expected data types
     $types = '';
 
@@ -57,13 +50,16 @@ class Category
 
     // Execute the query
     if ($stmt->execute()) {
-      header("Location: /discuss-app/all_categories.php?user_id=" . $_SESSION['user_data']['id']);
+      // Get the last inserted or updated category ID
+      $categoryId = $this->conn->insert_id ? $this->conn->insert_id : $categoryData['id'];
+      // Fetch the created or updated category
+      return $this->get_categories($categoryId); // Return the category data
     } else {
-      echo 'New category not added/updated: ' . $this->conn->error;
+      throw new Exception('New category not added/updated: ' . $this->conn->error);
     }
-    // Close statement & connection
+
+    // Close statement
     $stmt->close();
-    $this->conn->close();
   }
 
   public function get_categories($category_id = null, $user_id = null)
@@ -90,7 +86,14 @@ class Category
     $stmt = $this->conn->prepare($delete_query);
     $stmt->bind_param("i", $category_id);
     $stmt->execute();
+
+    // Check if the category was deleted
+    if ($stmt->affected_rows > 0) {
+      return ['success' => true, 'message' => 'Category deleted successfully.'];
+    } else {
+      return ['success' => false, 'message' => 'Category not found or could not be deleted.'];
+    }
+
     $stmt->close();
-    header("Location:/discuss-app/all_categories.php?user_id=" . $_SESSION['user_data']['id']);
   }
 }
