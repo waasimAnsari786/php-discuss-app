@@ -8,8 +8,7 @@ require_once __DIR__ . '/../classes/category.class.php'; // Include the Category
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-  $rawData = file_get_contents("php://input");
-  $data = json_decode($rawData, true);
+  $data = json_decode(file_get_contents("php://input"), true);
 
   // Check if ID is provided
   if (empty($data['id'])) {

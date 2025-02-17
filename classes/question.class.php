@@ -50,13 +50,23 @@ class Question
 
     // Execute the query
     if ($stmt->execute()) {
-      return ['success' => true, 'message' => 'Question asked/updated successfully.', 'question_id' => $this->conn->insert_id];
+      // Get the last inserted or updated question ID
+      $questionId = $this->conn->insert_id ? $this->conn->insert_id : $questionData['id'];
+      // Fetch the created or updated question
+      $latestQuestion = $this->get_questions($questionId); // Get the latest question
+      return [
+        'success' => true,
+        'question' => $latestQuestion // Return the latest question as an associative array
+      ];
     } else {
-      return ['success' => false, 'message' => 'New question not asked/updated: ' . $this->conn->error];
+      return [
+        'success' => false,
+        'message' => 'New question not asked/updated: ' . $this->conn->error
+      ];
     }
-    // Close statement & connection
+
+    // Close statement
     $stmt->close();
-    $this->conn->close();
   }
 
   public function get_questions($question_id = null, $user_id = null)
@@ -71,7 +81,7 @@ class Question
     $stmt = $this->conn->query($this->question_query);
     $questions = $stmt->fetch_all(MYSQLI_ASSOC);
 
-    return ['success' => true, 'data' => $questions];
+    return $questions;
     // Close statement & connection
     $stmt->close();
     $this->conn->close();

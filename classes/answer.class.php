@@ -14,12 +14,6 @@ class Answer
   // Add or update answer method
   public function add_update_answer($answerData)
   {
-    // Remove 'ask or update' keys if exist
-    if (isset($answerData['answer_question'])) {
-      unset($answerData['answer_question']);
-    } else {
-      unset($answerData['update_question']);
-    }
     // Define column types dynamically based on expected data types
     $types = '';
 
@@ -56,13 +50,24 @@ class Answer
 
     // Execute the query
     if ($stmt->execute()) {
-      header("Location: /discuss-app/detail_question.php?question_id=" . $answerData['question_id']);
+      // Get the last inserted or updated answer ID
+      $answerId = $this->conn->insert_id ? $this->conn->insert_id : $answerData['id'];
+      // Fetch the created or updated answer
+      $latestAnswer = $this->get_answers($answerId); // Get the latest answer
+
+      return [
+        'success' => true,
+        'answer' => $latestAnswer // Return the latest answer as an associative array
+      ];
     } else {
-      echo 'Answer not added/updated: ' . $this->conn->error;
+      return [
+        'success' => false,
+        'message' => 'Answer not added/updated: ' . $this->conn->error
+      ];
     }
-    // Close statement & connection
+
+    // Close statement
     $stmt->close();
-    $this->conn->close();
   }
 
   public function get_answers($answer_id = null, $question_id = null)
@@ -89,7 +94,20 @@ class Answer
     $stmt = $this->conn->prepare($delete_query);
     $stmt->bind_param("i", $answer_id);
     $stmt->execute();
+
+    // Check if the answer was deleted
+    if ($stmt->affected_rows > 0) {
+      return [
+        'success' => true,
+        'message' => 'Answer deleted successfully.'
+      ];
+    } else {
+      return [
+        'success' => false,
+        'message' => 'Answer not found or could not be deleted.'
+      ];
+    }
+
     $stmt->close();
-    header("Location:/discuss-app/all_answers.php?user_id=" . $_SESSION['user_data']['id']);
   }
 }

@@ -3,18 +3,20 @@ session_start(); // Start the session
 require_once __DIR__ . '/../db/config.php';
 require_once __DIR__ . '/../utils/api_error.utils.php';
 require_once __DIR__ . '/../utils/api_response.utils.php';
-require_once __DIR__ . '/../classes/question.class.php'; // Include the Question class
+require_once __DIR__ . '/../classes/answer.class.php'; // Include the Answer class
 
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-  try {
-    $question = new Question($conn);
-    $questions = $question->get_questions(); // Use the method to get questions
+  $answer_id = isset($_GET['id']) ? intval($_GET['id']) : null;
+  $question_id = isset($_GET['question_id']) ? intval($_GET['question_id']) : null;
 
-    $apiResponse = new ApiResponse(200, $questions, 'Questions retrieved successfully');
-    http_response_code($apiResponse->statusCode);
-    echo json_encode($apiResponse->toArray());
+  try {
+    $answer = new Answer($conn);
+    $result = $answer->get_answers($answer_id, $question_id); // Use the method to get answers
+
+    http_response_code(200);
+    echo json_encode(['success' => true, 'data' => $result]);
   } catch (Exception $e) {
     $apiError = new ApiError(500, 'Server error: ' . $e->getMessage());
     http_response_code($apiError->statusCode);

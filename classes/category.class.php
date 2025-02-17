@@ -53,9 +53,17 @@ class Category
       // Get the last inserted or updated category ID
       $categoryId = $this->conn->insert_id ? $this->conn->insert_id : $categoryData['id'];
       // Fetch the created or updated category
-      return $this->get_categories($categoryId); // Return the category data
+      $latestCategory = $this->get_categories($categoryId); // Get the latest category
+
+      return [
+        'success' => true,
+        'category' => $latestCategory // Return the latest category as an associative array
+      ];
     } else {
-      throw new Exception('New category not added/updated: ' . $this->conn->error);
+      return [
+        'success' => false,
+        'message' => 'New category not added/updated: ' . $this->conn->error
+      ];
     }
 
     // Close statement
@@ -93,7 +101,6 @@ class Category
     } else {
       return ['success' => false, 'message' => 'Category not found or could not be deleted.'];
     }
-
     $stmt->close();
   }
 }

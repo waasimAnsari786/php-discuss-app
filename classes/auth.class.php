@@ -42,14 +42,15 @@ class Auth
     if ($stmt->execute()) {
       // Get the last inserted user ID
       $last_id = $this->conn->insert_id;
-      // Push user_id in this array
-      $userData['id'] = $last_id;
-      $userData['password'] = null;
+      // get user
+      $user = $this->get_users($last_id);
+      // remove password form user
+      $user['password'] = null;
       // Return a success response
-      return  ['success' => true, 'user' => $userData];
+      return  ['success' => true, 'user' => $user];
     } else {
       // Return an error response
-      return ['error' => 'New user not registered: ' . $this->conn->error];
+      return ['success' => false, 'error' => 'New user not registered: ' . $this->conn->error];
     }
 
     // Close statement
@@ -83,16 +84,32 @@ class Auth
     $this->conn->close();
   }
 
-  public function get_users()
+  // Get users method
+  public function get_users($user_id = null)
   {
-    // Final SQL Query
-    $user_query = "SELECT * FROM users";
-    $result = $this->conn->query($user_query);
+    // Prepare the SQL query based on whether user_id is provided
+    if ($user_id) {
+      $user_query = "SELECT * FROM users WHERE id = ?";
+      $stmt = $this->conn->prepare($user_query);
+      $stmt->bind_param("i", $user_id); // Bind the user_id parameter
+    } else {
+      $user_query = "SELECT * FROM users";
+      $stmt = $this->conn->prepare($user_query);
+    }
+
+    // Execute the query
+    $stmt->execute();
+    $result = $stmt->get_result();
+
     // Check if there are users
     if ($result->num_rows > 0) {
       $users = $result->fetch_all(MYSQLI_ASSOC);
-
-      return $users;
+      return $users; // Return the users as an associative array
+    } else {
+      return []; // Return an empty array if no users found
     }
+
+    // Close statement
+    $stmt->close();
   }
 }
